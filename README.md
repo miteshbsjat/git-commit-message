@@ -30,7 +30,7 @@ Open your terminal and run the following commands:
 mkdir -p ~/.config/git_commit_message
 
 # Create and open the config file with a text editor
-nano ~/.config/git_commit_message/config.yaml
+vi ~/.config/git_commit_message/config.yaml
 ```
 
 Now, paste the following content into the `config.yaml` file. Adjust the values to match your setup.
