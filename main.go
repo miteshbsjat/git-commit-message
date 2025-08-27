@@ -67,7 +67,7 @@ func getStagedDiff() (string, error) {
 	output, err := cmd.Output()
 	if err != nil {
 		// This can happen if git is not installed or not in a repo.
-		return "", fmt.Errorf("failed to execute 'git diff --staged': %w", err)
+		return "", fmt.Errorf("failed to execute 'git diff': %w", err)
 	}
 	return string(output), nil
 }
