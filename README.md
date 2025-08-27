@@ -62,7 +62,7 @@ temperature: 0.5 # A value between 0.0 (deterministic) and 1.0 (creative)
     Now, from any git repository on your machine:
 
       * Stage your changes (`git add .`).
-      * Run the program: `git-commit`
+      * Run the program: `git-commit-message`
       * It will print a suggested commit message. You can then copy it and use it with `git commit -m "..."`.
 
 #### **Git Alias for Quick Commits**
