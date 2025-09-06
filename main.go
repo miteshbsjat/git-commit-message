@@ -26,9 +26,9 @@ type Config struct {
 
 // OllamaRequest defines the structure for the JSON payload sent to Ollama.
 type OllamaRequest struct {
-	Model   string  `json:"model"`
-	Prompt  string  `json:"prompt"`
-	Stream  bool    `json:"stream"`
+	Model   string `json:"model"`
+	Prompt  string `json:"prompt"`
+	Stream  bool   `json:"stream"`
 	Options struct {
 		Temperature float64 `json:"temperature"`
 	} `json:"options"`
@@ -47,7 +47,7 @@ func loadConfig() (*Config, error) {
 	}
 
 	configPath := filepath.Join(homeDir, ".config", "git_commit_message", "config.yaml")
-	
+
 	configFile, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not read config file at %s: %w", configPath, err)
@@ -63,7 +63,7 @@ func loadConfig() (*Config, error) {
 
 // getStagedDiff executes `git diff --staged` and returns its output.
 func getStagedDiff() (string, error) {
-	cmd := exec.Command("git", "diff")
+	cmd := exec.Command("git", "diff", "--staged")
 	output, err := cmd.Output()
 	if err != nil {
 		// This can happen if git is not installed or not in a repo.
@@ -101,7 +101,7 @@ func generateCommitMessage(config *Config, diff string) (string, error) {
 		return "", fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	// Execute the request
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
@@ -119,29 +119,28 @@ func generateCommitMessage(config *Config, diff string) (string, error) {
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("Ollama API returned non-200 status: %s. Response: %s", resp.Status, string(body))
 	}
-	
+
 	// Unmarshal the response
 	var ollamaResp OllamaResponse
 	if err := json.Unmarshal(body, &ollamaResp); err != nil {
 		return "", fmt.Errorf("failed to unmarshal Ollama response: %w", err)
 	}
-	
+
 	return ollamaResp.Response, nil
 }
 
 // cleanMessage removes unwanted characters like quotes and extra newlines.
 func cleanMessage(msg string) string {
-    // Trim leading/trailing whitespace
-    cleaned := strings.TrimSpace(msg)
-    // Some models wrap their output in quotes, so we remove them.
-    cleaned = strings.Trim(cleaned, "\"`")
-    // Ensure it's truly a single line by taking everything before the first newline.
-    if idx := strings.Index(cleaned, "\n"); idx != -1 {
-        cleaned = cleaned[:idx]
-    }
-    return cleaned
+	// Trim leading/trailing whitespace
+	cleaned := strings.TrimSpace(msg)
+	// Some models wrap their output in quotes, so we remove them.
+	cleaned = strings.Trim(cleaned, "\"`")
+	// Ensure it's truly a single line by taking everything before the first newline.
+	if idx := strings.Index(cleaned, "\n"); idx != -1 {
+		cleaned = cleaned[:idx]
+	}
+	return cleaned
 }
-
 
 func main() {
 	// 1. Load configuration
